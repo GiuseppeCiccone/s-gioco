@@ -86,23 +86,23 @@ function exposeCrud(tableName) {
     exposeList(tableName);
 
     app.get(`/${tableName}/:id`, (req, res) => {
-        pool.query(`SELECT * FROM ${tableName} LIMIT ${req.limit} OFFSET ${req.skip}`, (err, results) => {
+        pool.query(`SELECT * FROM ${tableName} WHERE id=?`, req.id, (err, results) => {
             if (err) return res.status(500).json({ error: err });
-            res.json(formatResponse(req, results));
+            res.json(results);
         });
     });
 
     app.post(`/${tableName}`, (req, res) => {
         pool.query('INSERT INTO ${tableName} SET ?', req.body, function (error, results, fields) {
             if (error) return res.status(500).json({ error: err });
-            res.json(formatResponse(req, results));
+            res.json(results);
         });
     });
 
     app.put(`/${tableName}/:id`, (req, res) => {
         pool.query('UPDATE ${tableName} SET ? WHERE id=?', [req.body, req.id], function (error, results, fields) {
             if (error) return res.status(500).json({ error: err });
-            res.json(formatResponse(req, results));
+            res.json(results);
         });
     });
 }
