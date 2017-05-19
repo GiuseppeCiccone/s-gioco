@@ -8,12 +8,12 @@ const app = new express();
 const startDate = new Date();
 
 const poolConfig = Object.assign(datasource, {
-   connectionLimit : 10
+    connectionLimit : 10
 });
-console.log(poolConfig);
+
 const pool = mysql.createPool(poolConfig);
 
-app.all('*', (req, res, next) => {
+function paginationMiddleware(req, res, next){
     let limit;
     try {
         limit = Number(req.query.limit) || 10;
@@ -33,30 +33,32 @@ app.all('*', (req, res, next) => {
     req.limit = limit;
     req.skip = skip;
     next();
-});
+}
 
 app.get('/', (req, res)=> {
-   res.json({
-      name: pkg.name,
-      version: pkg.version,
-      startDate,
-      uptime: new Date() - startDate
-   });
+    res.json({
+        name: pkg.name,
+        version: pkg.version,
+        startDate,
+        uptime: new Date() - startDate
+    });
 });
 
-expose('tags');
-expose('articles');
-expose('articles_tags_th');
+exposeCrud('tags');
+
+exposeCrud('articles');
+
+exposeList('articles_tags_th');
 
 app.all('*', (req, res) => {
-  res.status(404).json( {
-     status: 404,
-     message: 'Pagina non trovata'
-  });
+    res.status(404).json( {
+        status: 404,
+        message: 'Pagina non trovata'
+    });
 });
 
 app.listen(8000, () => {
-   console.log('Server in ascolto sulla porta 8000')
+    console.log('Server in ascolto sulla porta 8000')
 });
 
 function formatResponse(req, data) {
@@ -71,11 +73,36 @@ function formatResponse(req, data) {
     };
 }
 
-function expose(tableName) {
-    app.get(`/${tableName}`, (req, res) => {
+function exposeList(tableName) {
+    app.get(`/${tableName}`, paginationMiddleware, (req, res) => {
         pool.query(`SELECT * FROM ${tableName} LIMIT ${req.limit} OFFSET ${req.skip}`, (err, results) => {
             if (err) return res.status(500).json({ error: err });
             res.json(formatResponse(req, results));
+        });
+    });
+}
+
+function exposeCrud(tableName) {
+    exposeList(tableName);
+
+    app.get(`/${tableName}/:id`, (req, res) => {
+        pool.query(`SELECT * FROM ${tableName} WHERE id=?`, req.id, (err, results) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json(results);
+        });
+    });
+
+    app.post(`/${tableName}`, (req, res) => {
+        pool.query('INSERT INTO ${tableName} SET ?', req.body, function (error, results, fields) {
+            if (error) return res.status(500).json({ error: err });
+            res.json(results);
+        });
+    });
+
+    app.put(`/${tableName}/:id`, (req, res) => {
+        pool.query('UPDATE ${tableName} SET ? WHERE id=?', [req.body, req.id], function (error, results, fields) {
+            if (error) return res.status(500).json({ error: err });
+            res.json(results);
         });
     });
 }
