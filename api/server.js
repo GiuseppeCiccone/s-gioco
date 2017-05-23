@@ -2,8 +2,11 @@
 const pkg    = require('./package.json');
 const express = require('express');
 const mysql  = require('mysql');
-const datasource = require('./datasource.json');
+const settings = require('./settings.json');
+const datasource = settings.datasource;
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const hash = crypto.createHash('sha256');
 
 const app = new express();
 const startDate = new Date();
@@ -86,22 +89,29 @@ function exposeList(tableName) {
 function exposeCrud(tableName) {
     exposeList(tableName);
 
-    app.get(`/${tableName}/:id`, (req, res) => {
-        pool.query(`SELECT * FROM ${tableName} WHERE id=?`, req.id, (err, results) => {
+    app.get(`/${tableName}/:alias`, (req, res) => {
+        pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, req.alias, (err, results) => {
             if (err) return res.status(500).json({ error: err });
             res.json(results);
         });
     });
 
     app.post(`/${tableName}`, (req, res) => {
-        pool.query('INSERT INTO ${tableName} SET ?', req.body, function (error, results, fields) {
+        pool.query('INSERT INTO ${tableName} SET ?', req.body, (error, results) => {
             if (error) return res.status(500).json({ error: err });
             res.json(results);
         });
     });
 
     app.put(`/${tableName}/:id`, (req, res) => {
-        pool.query('UPDATE ${tableName} SET ? WHERE id=?', [req.body, req.id], function (error, results, fields) {
+        pool.query('UPDATE ${tableName} SET ? WHERE alias=?', [req.body, req.alias], (error, results)  => {
+            if (error) return res.status(500).json({ error: err });
+            res.json(results);
+        });
+    });
+
+    app.delete(`/${tableName}/:alias`, (req, res) => {
+        pool.query('DELETE FROM ${tableName} WHERE alias=?', [req.body, req.alias], (error, results) => {
             if (error) return res.status(500).json({ error: err });
             res.json(results);
         });
