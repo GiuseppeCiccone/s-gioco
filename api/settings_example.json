@@ -1,6 +1,6 @@
 {
   "jwt" : {
-    "secret-key" : "changeme",
+    "secret" : "changeme",
     "algorithm": "HS256",
     "life-time": "604800"
   },
