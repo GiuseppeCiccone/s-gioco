@@ -3,6 +3,7 @@ const pkg    = require('./package.json');
 const express = require('express');
 const mysql  = require('mysql');
 const datasource = require('./datasource.json');
+const jwt = require('jsonwebtoken');
 
 const app = new express();
 const startDate = new Date();
