@@ -85,7 +85,7 @@ app.post('/login', (req, res) => {
             data: results[0]
         }, jwtConfig.secret);
 
-        res.cookie("auth", token, {expires: expriy, httpOnly: true}).send();
+        res.cookie("auth", token, {expires: expriy, httpOnly: true, sameSite: 'strict'}).send();
     });
 });
 
