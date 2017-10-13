@@ -1,14 +1,12 @@
-'use strict';
-const pkg    = require('./package.json');
+const pkg = require('./package.json');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mysql  = require('mysql');
-const settings = require('./settings.json');
-const datasource = settings.datasource;
-const jwtConfig = settings.jwt;
-const jwt = require('jsonwebtoken');
+const {datasource, jwt} = require('./settings.json');
+const jsonWebToken = require('jsonwebtoken');
 const crypto = require('crypto');
+const humanTime = require('human-time');
 
 const app = new express();
 const startDate = new Date();
@@ -44,8 +42,8 @@ function paginationMiddleware(req, res, next){
     next();
 }
 
-function authenticationMiddleware(req, res, next) {
-    jwt.verify(req.cookies.auth, jwtConfig.secret, (err, decoded) => {
+function authMid(req, res, next) {
+    jsonWebToken.verify(req.cookies.auth, jwt.secret, (err, decoded) => {
         if(!err) {
             req.user = decoded.data;
         }
@@ -58,7 +56,7 @@ app.get('/', (req, res)=> {
         name: pkg.name,
         version: pkg.version,
         startDate,
-        uptime: new Date() - startDate
+        uptime: humanTime((new Date - startDate) / 1000)
     });
 });
 
@@ -68,21 +66,21 @@ exposeCrud('articles');
 
 exposeList('articles_tags_th');
 
+const sendError = (res, status, message) => res.status(status).json({status, message});
 app.post('/login', (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    if(!username || !password) return req.status(400);
+    const {username, password} = req.body;
+    if(!username || !password) return sendError(res, 400, 'bad request, missing username or password');
 
     pool.query('SELECT username,permissions FROM users WHERE username=? and password=?', [username, sha256(password)], (err, results) => {
         if (err) return res.status(500).json({ error: err });
         if(!results) return res.status(404).send();
 
-        const token = jwt.sign({
+        const token = jsonWebToken.sign({
             exp: Math.floor(Date.now() / 1000) + (60 * 60),
             data: results[0]
-        }, jwtConfig.secret);
+        }, jwt.secret);
 
-        res.cookie("auth", token).send();
+        res.cookie('auth', token).send();
     });
 });
 
@@ -97,9 +95,7 @@ app.listen(8000, () => {
     console.log('Server in ascolto sulla porta 8000')
 });
 
-function sha256(text) {
-    return crypto.createHash('sha256').update(text).digest();
-}
+const sha256 = (text) => crypto.createHash('sha256').update(text).digest();
 
 function formatResponse(req, data) {
     const limit = req.limit;
@@ -124,11 +120,9 @@ function exposeList(tableName) {
 }
 
 function hasPermission(permissionRequired, permissions) {
-    permissions = JSON.parse(permissions);
     for (let i = 0; i < permissions.length; i++) {
-        let perm = permissions[i];
-        if(perm === "*" || perm === permissionRequired) return true;
-        //Do something
+        const perm = permissions[i];
+        if(perm === '*' || perm === permissionRequired) return true;
     }
     return false;
 }
@@ -140,25 +134,24 @@ function exposeCrud(tableName) {
         pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, req.params.alias, (error, results) => {
             if (err) return res.status(500).json({ error });
             if(!results.length) return res.status(404).json({
-                "message": "Not found!"
+                'message': 'Not found!'
             });
             res.json(results[0]);
         });
     });
 
-    app.post(`/${tableName}`, authenticationMiddleware, (req, res) => {
+    app.post(`/${tableName}`, authMid, (req, res) => {
         if(!req.user) return res.status(401).send();
-        if(!hasPermission("article.create", req.user.permissions)) return res.status(403).send();
-        console.log(req.body);
+        if(!hasPermission('article.create', req.user.permissions)) return res.status(403).send();
         pool.query(`INSERT INTO ${tableName} SET ?`, req.body, (error, results) => {
             if (error) return res.status(500).json({ error });
             res.json(results);
         });
     });
 
-    app.put(`/${tableName}/:alias`, authenticationMiddleware, (req, res) => {
+    app.put(`/${tableName}/:alias`, authMid, (req, res) => {
         if(!req.user) return res.status(401).send();
-        if(!hasPermission("article.update", req.user.permissions)) return res.status(403).send();
+        if(!hasPermission('article.update', req.user.permissions)) return res.status(403).send();
 
         pool.query(`UPDATE ${tableName} SET ? WHERE alias=?`, [req.body, req.params.alias], (error, results)  => {
             if (error) return res.status(500).json({ error });
@@ -166,9 +159,9 @@ function exposeCrud(tableName) {
         });
     });
 
-    app.delete(`/${tableName}/:alias`, authenticationMiddleware, (req, res) => {
+    app.delete(`/${tableName}/:alias`, authMid, (req, res) => {
         if(!req.user) return res.status(401).send();
-        if(!hasPermission("article.delete", req.user.permissions)) return res.status(403).send();
+        if(!hasPermission('article.delete', req.user.permissions)) return res.status(403).send();
 
         pool.query(`DELETE FROM ${tableName} WHERE alias=?`, [req.body, req.params.alias], (error, results) => {
             if (error) return res.status(500).json({ error });
