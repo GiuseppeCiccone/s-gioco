@@ -74,13 +74,16 @@ app.post('/login', (req, res) => {
     pool.query('SELECT username,permissions FROM users WHERE username=? and password=?', [username, sha256(password)], (err, results) => {
         if (err) return res.status(500).json({ error: err });
         if(!results) return res.status(404).send();
-
+        
+        var expriy = new Date();
+        expriy.setDate(expriy.getDate() + jwtConfig["life-time-days"]);
+      
         const token = jsonWebToken.sign({
             exp: Math.floor(Date.now() / 1000) + (60 * 60),
             data: results[0]
         }, jwt.secret);
-
-        res.cookie('auth', token).send();
+      
+        res.cookie("auth", token, {expires: expriy, httpOnly: true, sameSite: 'strict'}).send();
     });
 });
 
