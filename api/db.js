@@ -6,6 +6,14 @@ const poolConfig = Object.assign(datasource, {
 
 const pool = mysql.createPool(poolConfig);
 
+function list(tableName, limit, skip) {
+    pool.query(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${skip}`, (err, results) => {
+        if (err) return res.status(500).json({ error: err });
+        res.json(formatResponse(req, results));
+    });
+}
+
+
 function get(tableName, alias) {
     pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, alias, (error, results) => {
         if (err) return res.status(500).json({ error });
