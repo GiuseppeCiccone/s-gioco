@@ -2,7 +2,6 @@ const pkg = require('./package.json');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const mysql  = require('mysql');
 const {datasource, jwt} = require('./settings.json');
 const jsonWebToken = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -11,11 +10,7 @@ const humanTime = require('human-time');
 const app = new express();
 const startDate = new Date();
 
-const poolConfig = Object.assign(datasource, {
-    connectionLimit : 10
-});
-
-const pool = mysql.createPool(poolConfig);
+const db = require('./db.js');
 
 app.use(cookieParser());
 app.use(bodyParser.json());
