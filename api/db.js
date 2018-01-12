@@ -41,6 +41,45 @@ function getArticle(alias) {
 	return get('articles', alias);
 }
 
+function listArticles() {
+    return list('articles');
+}
+
 function insertArticle(body) {
 	return insert('articles', body);
 }
+
+function updateArticle(alias, body) {
+    return update('articles', alias, body);
+}
+
+function deleteArticle(alias) {
+    return insert('articles', alias);
+}
+
+function listTags() {
+    return list('tags');
+}
+
+function getTag(alias) {
+    return get('tags', alias);
+}
+
+function insertTag(body) {
+    return insert('tags', body);
+}
+
+function updateTag(alias, body) {
+    return update('tags', alias, body);
+}
+
+function deleteTag(alias) {
+    return insert('tags', alias);
+}
+
+function listArticlesTagsTh() {
+    return list('articles_tags_th');
+}
+
+
+
