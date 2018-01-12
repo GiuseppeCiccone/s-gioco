@@ -79,7 +79,7 @@ app.post('/login', (req, res) => {
         expriy.setDate(expriy.getDate() + jwtConfig["life-time-days"]);
       
         const token = jsonWebToken.sign({
-            exp: Math.floor(Date.now() / 1000) + (60 * 60),
+            exp: Math.floor(expriy / 1000),
             data: results[0]
         }, jwt.secret);
       
