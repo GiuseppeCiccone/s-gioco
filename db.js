@@ -1,4 +1,7 @@
 const mysql  = require('mysql');
+const crypto = require('crypto');
+const { datasource } = require('./settings.json');
+const sha256 = (text) => crypto.createHash('sha256').update(text).digest();
 
 const poolConfig = Object.assign(datasource, {
     connectionLimit : 10
@@ -70,5 +73,6 @@ export function listArticlesTagsTh(limit, skip, cb) {
     return list('articles_tags_th', limit, skip, cb);
 }
 
-
-
+export function getUser(username, password, cb) {
+    pool.query('SELECT username,permissions FROM users WHERE username=? and password=?', [username, sha256(password)], cb);
+}

@@ -2,9 +2,8 @@ const pkg = require('./package.json');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const {datasource, jwt} = require('./settings.json');
+const { jwt } = require('./settings.json');
 const jsonWebToken = require('jsonwebtoken');
-const crypto = require('crypto');
 const humanTime = require('human-time');
 
 const app = new express();
@@ -66,7 +65,7 @@ app.post('/login', (req, res) => {
     const {username, password} = req.body;
     if(!username || !password) return sendError(res, 400, 'bad request, missing username or password');
 
-    pool.query('SELECT username,permissions FROM users WHERE username=? and password=?', [username, sha256(password)], (err, results) => {
+    db.getUser(username, password, (err, results) => {
         if (err) return res.status(500).json({ error: err });
         if(!results) return res.status(404).send();
         
@@ -93,7 +92,6 @@ app.listen(8000, () => {
     console.log('Server in ascolto sulla porta 8000')
 });
 
-const sha256 = (text) => crypto.createHash('sha256').update(text).digest();
 
 function formatResponse(req, data) {
     const limit = req.limit;
