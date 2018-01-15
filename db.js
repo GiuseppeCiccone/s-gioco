@@ -6,87 +6,68 @@ const poolConfig = Object.assign(datasource, {
 
 const pool = mysql.createPool(poolConfig);
 
-function list(tableName, limit, skip) {
-    pool.query(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${skip}`, (err, results) => {
-        if (err) return res.status(500).json({ error: err });
-        res.json(formatResponse(req, results));
-    });
+export function list(tableName, limit, skip, cb) {
+    pool.query(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${skip}`, cb);
 }
 
-
-function get(tableName, alias) {
-    pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, alias, (error, results) => {
-        if (err) return res.status(500).json({ error });
-        if(!results.length) return res.status(404).json({
-            'message': 'Not found!'
-        });
-        res.json(results[0]);
-    });
+export function get(tableName, alias, cb) {
+    pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, alias, cb);
 }
 
-function insert(tableName, body) {
-    pool.query(`INSERT INTO ${tableName} SET ?`, body, (error, results) => {
-        if (error) return res.status(500).json({ error });
-        res.json(results);
-    });
+export function insert(tableName, body, cb) {
+    pool.query(`INSERT INTO ${tableName} SET ?`, body, cb);
 }
 
-function udate(tableName, alias, body) {
-    pool.query(`UPDATE ${tableName} SET ? WHERE alias=?`, [body, alias], (error, results)  => {
-        if (error) return res.status(500).json({ error });
-        res.json(results);
-    });
+export function update(tableName, alias, body, cb) {
+    pool.query(`UPDATE ${tableName} SET ? WHERE alias=?`, [body, alias], cb);
 }
 
-function delete(tableName, alias) {
-    pool.query(`DELETE FROM ${tableName} WHERE alias=?`, alias, (error, results) => {
-        if (error) return res.status(500).json({ error });
-        res.json(results);
-    });
+export function deleteRow(tableName, alias, cb) {
+    pool.query(`DELETE FROM ${tableName} WHERE alias=?`, alias, cb);
 }
 
-function getArticle(alias) {
-	return get('articles', alias);
+export function getArticle(alias, cb) {
+	return get('articles', alias, cb);
 }
 
-function listArticles() {
-    return list('articles');
+export function listArticles(limit, skip, cb) {
+    return list('articles', limit, skip, cb);
 }
 
-function insertArticle(body) {
-	return insert('articles', body);
+export function insertArticle(body, cb) {
+	return insert('articles', body, cb);
 }
 
-function updateArticle(alias, body) {
-    return update('articles', alias, body);
+export function updateArticle(alias, body, cb) {
+    return update('articles', alias, body, cb);
 }
 
-function deleteArticle(alias) {
-    return insert('articles', alias);
+export function deleteArticle(alias, cb) {
+    return insert('articles', alias, cb);
 }
 
-function listTags() {
-    return list('tags');
+export function listTags(limit, skip, cb) {
+    return list('tags', limit, skip, cb);
 }
 
-function getTag(alias) {
-    return get('tags', alias);
+export function getTag(alias, cb) {
+    return get('tags', alias, cb);
 }
 
-function insertTag(body) {
-    return insert('tags', body);
+export function insertTag(body, cb) {
+    return insert('tags', body, cb);
 }
 
-function updateTag(alias, body) {
-    return update('tags', alias, body);
+export function updateTag(alias, body, cb) {
+    return update('tags', alias, body, cb);
 }
 
-function deleteTag(alias) {
-    return insert('tags', alias);
+export function deleteTag(alias, cb) {
+    return insert('tags', alias, cb);
 }
 
-function listArticlesTagsTh() {
-    return list('articles_tags_th');
+export function listArticlesTagsTh(limit, skip, cb) {
+    return list('articles_tags_th', limit, skip, cb);
 }
 
 

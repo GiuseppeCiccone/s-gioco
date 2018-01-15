@@ -110,7 +110,7 @@ function formatResponse(req, data) {
 
 function exposeList(tableName) {
     app.get(`/${tableName}`, paginationMiddleware, (req, res) => {
-        pool.query(`SELECT * FROM ${tableName} LIMIT ${req.limit} OFFSET ${req.skip}`, (err, results) => {
+        db.list(tableName, req.limit, req.skip, (err, results) => {
             if (err) return res.status(500).json({ error: err });
             res.json(formatResponse(req, results));
         });
@@ -129,7 +129,7 @@ function exposeCrud(tableName) {
     exposeList(tableName);
 
     app.get(`/${tableName}/:alias`, (req, res) => {
-        pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, req.params.alias, (error, results) => {
+        db.get(tableName, req.params.alias, (error, results) => {
             if (err) return res.status(500).json({ error });
             if(!results.length) return res.status(404).json({
                 'message': 'Not found!'
@@ -141,7 +141,7 @@ function exposeCrud(tableName) {
     app.post(`/${tableName}`, authMid, (req, res) => {
         if(!req.user) return res.status(401).send();
         if(!hasPermission('article.create', req.user.permissions)) return res.status(403).send();
-        pool.query(`INSERT INTO ${tableName} SET ?`, req.body, (error, results) => {
+        db.insert(tableName, req.body, (error, results) => {
             if (error) return res.status(500).json({ error });
             res.json(results);
         });
@@ -151,7 +151,7 @@ function exposeCrud(tableName) {
         if(!req.user) return res.status(401).send();
         if(!hasPermission('article.update', req.user.permissions)) return res.status(403).send();
 
-        pool.query(`UPDATE ${tableName} SET ? WHERE alias=?`, [req.body, req.params.alias], (error, results)  => {
+        db.update(tableName, req.params.alias, req.body, (error, results)  => {
             if (error) return res.status(500).json({ error });
             res.json(results);
         });
@@ -161,7 +161,7 @@ function exposeCrud(tableName) {
         if(!req.user) return res.status(401).send();
         if(!hasPermission('article.delete', req.user.permissions)) return res.status(403).send();
 
-        pool.query(`DELETE FROM ${tableName} WHERE alias=?`, [req.body, req.params.alias], (error, results) => {
+        db.deleteRow(tableName, req.params.alias, req.body, (error, results) => {
             if (error) return res.status(500).json({ error });
             res.json(results);
         });
