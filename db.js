@@ -9,70 +9,70 @@ const poolConfig = Object.assign(datasource, {
 
 const pool = mysql.createPool(poolConfig);
 
-export function list(tableName, limit, skip, cb) {
+exports.list = function(tableName, limit, skip, cb) {
     pool.query(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${skip}`, cb);
 }
 
-export function get(tableName, alias, cb) {
+exports.get = function(tableName, alias, cb) {
     pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, alias, cb);
 }
 
-export function insert(tableName, body, cb) {
+exports.insert = function(tableName, body, cb) {
     pool.query(`INSERT INTO ${tableName} SET ?`, body, cb);
 }
 
-export function update(tableName, alias, body, cb) {
+exports.update = function(tableName, alias, body, cb) {
     pool.query(`UPDATE ${tableName} SET ? WHERE alias=?`, [body, alias], cb);
 }
 
-export function deleteRow(tableName, alias, cb) {
+exports.deleteRow = function(tableName, alias, cb) {
     pool.query(`DELETE FROM ${tableName} WHERE alias=?`, alias, cb);
 }
 
-export function getArticle(alias, cb) {
+exports.getArticle = function(alias, cb) {
 	return get('articles', alias, cb);
 }
 
-export function listArticles(limit, skip, cb) {
+exports.listArticles = function(limit, skip, cb) {
     return list('articles', limit, skip, cb);
 }
 
-export function insertArticle(body, cb) {
+exports.insertArticle = function(body, cb) {
 	return insert('articles', body, cb);
 }
 
-export function updateArticle(alias, body, cb) {
+exports.updateArticle = function(alias, body, cb) {
     return update('articles', alias, body, cb);
 }
 
-export function deleteArticle(alias, cb) {
+exports.deleteArticle = function(alias, cb) {
     return insert('articles', alias, cb);
 }
 
-export function listTags(limit, skip, cb) {
+exports.listTags = function(limit, skip, cb) {
     return list('tags', limit, skip, cb);
 }
 
-export function getTag(alias, cb) {
+exports.getTag = function(alias, cb) {
     return get('tags', alias, cb);
 }
 
-export function insertTag(body, cb) {
+exports.insertTag = function(body, cb) {
     return insert('tags', body, cb);
 }
 
-export function updateTag(alias, body, cb) {
+exports.updateTag = function(alias, body, cb) {
     return update('tags', alias, body, cb);
 }
 
-export function deleteTag(alias, cb) {
+exports.deleteTag = function(alias, cb) {
     return insert('tags', alias, cb);
 }
 
-export function listArticlesTagsTh(limit, skip, cb) {
+exports.listArticlesTagsTh = function(limit, skip, cb) {
     return list('articles_tags_th', limit, skip, cb);
 }
 
-export function getUser(username, password, cb) {
+exports.getUser = function(username, password, cb) {
     pool.query('SELECT username,permissions FROM users WHERE username=? and password=?', [username, sha256(password)], cb);
 }
