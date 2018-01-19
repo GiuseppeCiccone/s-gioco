@@ -1,18 +1,12 @@
 const pkg = require('./package.json');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const { jwt } = require('./settings.json');
 const jsonWebToken = require('jsonwebtoken');
 const humanTime = require('human-time');
-
-const app = new express();
+const Valkyrie = require('aws-valkyrie');
+const app = new Valkyrie();
 const startDate = new Date();
 
 const db = require('./db.js');
-
-app.use(cookieParser());
-app.use(bodyParser.json());
 
 function paginationMiddleware(req, res, next){
     let limit;
@@ -88,10 +82,7 @@ app.all('*', (req, res) => {
     });
 });
 
-app.listen(8000, () => {
-    console.log('Server in ascolto sulla porta 8000')
-});
-
+exports.handler = (...args) => app.listen(...args);
 
 function formatResponse(req, data) {
     const limit = req.limit;

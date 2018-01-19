@@ -1,0 +1,13 @@
+{
+  "jwt" : {
+    "secret" : "changeme",
+    "algorithm": "HS256",
+    "life-time-days": "31"
+  },
+  "datasource" : {
+    "host" : "127.0.0.1",
+    "user" : "root",
+    "password" : "",
+    "database" : "s_gioco"
+  }
+}
