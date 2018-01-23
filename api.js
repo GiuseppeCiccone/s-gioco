@@ -119,7 +119,7 @@ function exposeCrud(tableName) {
 
     app.get(`/${tableName}/:alias`, (req, res) => {
         db.get(tableName, req.params.alias, (err, results) => {
-            if (err) return res.status(500).json({ err });
+            if (err) return res.status(500).json({ error: err });
             if(!results.length) return res.status(404).json({
                 'message': 'Not found!'
             });
