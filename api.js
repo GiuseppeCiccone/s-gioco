@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
         if(!results) return res.status(404).send();
         
         var expriy = new Date();
-        expriy.setDate(expriy.getDate() + jwtConfig["life-time-days"]);
+        expriy.setDate(expriy.getDate() + jwt["life-time-days"]);
       
         const token = jsonWebToken.sign({
             exp: Math.floor(expriy / 1000),
@@ -118,8 +118,8 @@ function exposeCrud(tableName) {
     exposeList(tableName);
 
     app.get(`/${tableName}/:alias`, (req, res) => {
-        db.get(tableName, req.params.alias, (error, results) => {
-            if (err) return res.status(500).json({ error });
+        db.get(tableName, req.params.alias, (err, results) => {
+            if (err) return res.status(500).json({ err });
             if(!results.length) return res.status(404).json({
                 'message': 'Not found!'
             });
