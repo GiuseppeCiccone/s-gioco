@@ -1,12 +1,14 @@
 {
-  "private": true,
   "name": "s-gioco",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "",
-  "main": "index.js",
-  "author": "",
+  "main": "api.js",
+  "author": "Matteo Carrara",
   "license": "MIT",
   "dependencies": {
-    "aws-valkyrie": "^0.8.9"
+    "aws-valkyrie": "^0.8.9",
+    "human-time": "0.0.1",
+    "jsonwebtoken": "^7.4.1",
+    "mysql": "^2.13.0"
   }
 }

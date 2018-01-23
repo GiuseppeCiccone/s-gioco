@@ -14,7 +14,7 @@
       "Lambda": {
         "FunctionName": "s-gioco-production",
         "Description": "",
-        "Handler": "index.handler",
+        "Handler": "api.handler",
         "MemorySize": "128",
         "Timeout": "3",
         "Runtime": "nodejs6.10",
