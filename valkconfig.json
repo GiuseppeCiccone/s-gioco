@@ -1,0 +1,25 @@
+{
+  "Project": {
+    "Region": "eu-west-1"
+  },
+  "Environments": {
+    "production": {
+      "Iam": {
+        "RoleName": "s-gioco-production-lambda",
+        "PolicyArn": "arn:aws:iam::829198842511:policy/valkyrie/production/s-gioco-production-lambda"
+      },
+      "Api": {
+        "Id": "hbj2gyrf5l"
+      },
+      "Lambda": {
+        "FunctionName": "s-gioco-production",
+        "Description": "",
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Timeout": "3",
+        "Runtime": "nodejs6.10",
+        "Role": "arn:aws:iam::829198842511:role/valkyrie/production/s-gioco-production-lambda"
+      }
+    }
+  }
+}
