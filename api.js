@@ -5,7 +5,6 @@ const humanTime = require('human-time');
 const Valkyrie = require('aws-valkyrie');
 const app = new Valkyrie();
 const startDate = new Date();
-
 const db = require('./db.js');
 
 function paginationMiddleware(req, res, next){
@@ -82,8 +81,6 @@ app.all('*', (req, res) => {
     });
 });
 
-exports.handler = (...args) => app.listen(...args);
-
 function formatResponse(req, data) {
     const limit = req.limit;
     const skip = req.skip;
@@ -156,3 +153,5 @@ function exposeCrud(tableName) {
         });
     });
 }
+
+exports.handler = (...args) => app.listen(...args);
