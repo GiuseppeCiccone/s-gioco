@@ -4,19 +4,27 @@ const { datasource } = require('./settings.json');
 const sha256 = (text) => crypto.createHash('sha256').update(text).digest();
 
 const poolConfig = Object.assign(datasource, {
-    connectionLimit : 10
+    connectionLimit : 5
 });
 
 const e = module.exports = {};
 
-const pool = mysql.createPool(poolConfig);
+const pool = mysql.createConnection(datasource);
+
+pool.connect();
 
 const list = e.list = (tableName, limit, skip, cb) => {
     pool.query(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${skip}`, cb);
 }
 
 const get = e.get = (tableName, alias, cb) => {
-    pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, alias, cb);
+    console.log('4');
+    console.log(alias);
+    pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, [alias], function (error, results, fields) {
+        console.log(error);
+        console.log(results);
+        cb(error, results)
+  });
 }
 
 const insert = e.insert = (tableName, body, cb) => {
@@ -77,4 +85,8 @@ const deleteTag = e.deleteTag = (alias, cb) => {
 
 const listArticlesTagsTh = e.listArticlesTagsTh = (limit, skip, cb) => {
     return list('articles_tags_th', limit, skip, cb);
+}
+
+const endConnection = e.endConnection = () => {
+    pool.end();
 }
