@@ -104,11 +104,7 @@ function exposeList(tableName) {
 }
 
 function hasPermission(permissionRequired, permissions) {
-    for (let i = 0; i < permissions.length; i++) {
-        const perm = permissions[i];
-        if(perm === '*' || perm === permissionRequired) return true;
-    }
-    return false;
+    return permissions === 'admin';
 }
 
 function exposeCrud(tableName) {
