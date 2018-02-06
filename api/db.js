@@ -18,8 +18,6 @@ const list = e.list = (tableName, limit, skip, cb) => {
 }
 
 const get = e.get = (tableName, alias, cb) => {
-    console.log('4');
-    console.log(alias);
     pool.query(`SELECT * FROM ${tableName} WHERE alias=?`, [alias], function (error, results, fields) {
         console.log(error);
         console.log(results);
