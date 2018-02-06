@@ -5,7 +5,7 @@ const host = 'https://hbj2gyrf5l.execute-api.eu-west-1.amazonaws.com/production'
 const file = process.argv[2];
 const type = process.argv[3];
 
-const originalHtml = fs.readFileSync('./index.html', { encoding: 'utf8' });
+const originalHtml = fs.readFileSync(file, { encoding: 'utf8' });
 
 template(type, originalHtml).then( res => {
   console.log(res.data.data);
