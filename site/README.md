@@ -1,1 +1,2 @@
-node template.js ./PATH/TO/file.html articles/tags
+npm i
+node template ./PATH/TO/file.html articles/tags
