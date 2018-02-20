@@ -41,7 +41,7 @@
 			<% articles.forEach(function(article){ %>			  
 			  <div class="blog-post">
 				<h2 class="blog-post-title"><%= article.title %></h2>
-				<p class="blog-post-meta">January 1, 2014 by <a href="#">Mark</a></p>
+				<p class="blog-post-meta"><%= new Date(article.lastUpdateDate).toLocaleDateString() %> by <a href="#"><%= article.author %></a></p>
 				<p class="card-text"><%= article.text %></p>
 			  </div><!-- /.blog-post -->
 			<% }); %>
